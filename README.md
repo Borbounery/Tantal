@@ -45,7 +45,7 @@ Tantal Messenger - это веб-основанный мессенджер, пр
 
 2. Клонируйте репозиторий:
 
-   git clone https://github.com/your-repository/tantal-messenger.git
+   https://github.com/Borbounery/Tantal.git
 
 3. Запустите сервер:
 
