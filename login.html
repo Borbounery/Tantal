@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="w-full max-w-xs">
+    <h1 class="text-center text-2xl font-bold mb-6">Вход</h1>
+    <form id="login-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <label for="identificator" class="block text-gray-700 text-sm font-bold mb-2">Идентификатор (XX-XX-XXXX):</label>
+        <input type="text" id="identificator" name="identificator" maxlength="10" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Пароль:</label>
+        <input type="password" id="password" name="password" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
+        <button type="button" id="show-password" class="text-blue-500 hover:text-blue-700 text-sm">Показать пароль</button>
+      </div>
+      <div class="flex items-center justify-between">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Войти</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    const identificatorInput = document.getElementById("identificator");
+    const passwordInput = document.getElementById("password");
+    const showPasswordButton = document.getElementById("show-password");
+    const loginForm = document.getElementById("login-form");
+
+    showPasswordButton.addEventListener("click", function() {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        showPasswordButton.textContent = "Скрыть пароль";
+      } else {
+        passwordInput.type = "password";
+        showPasswordButton.textContent = "Показать пароль";
+      }
+    });
+
+    identificatorInput.addEventListener("keypress", function(e) {
+      const keyCode = e.keyCode;
+
+      if (!(keyCode >= 48 && keyCode <= 57) && keyCode !== 8 && keyCode !== 46) {
+        e.preventDefault();
+        return;
+      }
+
+      const currentValue = this.value;
+      let newValue = currentValue;
+
+      if (currentValue.length === 2) {
+        newValue += "-";
+      } else if (currentValue.length === 5) {
+        newValue += "-";
+      }
+
+      this.value = newValue;
+    });
+
+    loginForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const identificator = document.getElementById("identificator").value;
+      const password = document.getElementById("password").value;
+
+      fetch("/token", {
+        method: "POST",
+        body: JSON.stringify({ identificator, password }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          document.cookie = `AAA-X=${data.token}; path=/`;
+          location.reload();
+        } else {
+          alert(data.msg || "Login failed!");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+      });
+    });
+  </script>
+</body>
+</html>
